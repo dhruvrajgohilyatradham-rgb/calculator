@@ -164,6 +164,11 @@ input:focus{
     <input type="number" id="chargePercent" placeholder="17 or 18" value="17.34" oninput="calculate()">
 </div>
 
+<div class="input-group">
+    <label>tax (%)</label>
+    <input type="number" id="txtFiled" value="5" oninput="calculate()">
+</div>
+
 <div class="results">
 
 ```
@@ -205,14 +210,6 @@ input:focus{
 
 </div>
 
-<button class="copy-btn" onclick="copySummary()">
-📋 Copy Summary
-</button>
-
-<div class="note">
-Auto calculates while typing.
-</div>
-
 </div>
 
 <script>
@@ -235,12 +232,13 @@ let rooms = parseInt(document.getElementById('rooms').value) || 0;
     let days = parseInt(document.getElementById('days').value) || 0;
     let guests = parseInt(document.getElementById('guests').value) || 1;
     let chargePercent = parseFloat(document.getElementById('chargePercent').value) || 0;
+    let txtFiled = parseFloat(document.getElementById('txtFiled').value) || 0;
 
     let finalRoomPrice = roomPrice + mattressPrice;
 
 let baseAmount = finalRoomPrice * rooms * days;
 
-    let taxAmount = baseAmount * 0.05;
+    let taxAmount = baseAmount * (txtFiled / 100);
 
     let totalAmount = baseAmount + taxAmount;
 
@@ -277,33 +275,7 @@ let baseAmount = finalRoomPrice * rooms * days;
         formatCurrency(perRoomPerDay);
 }
 
-function copySummary(){
 
-    let roomPrice = document.getElementById('price').value || 0;
-    let rooms = document.getElementById('rooms').value || 0;
-    let days = document.getElementById('days').value || 0;
-    let guests = document.getElementById('guests').value || 0;
-
-    let summary =
-`🏨 Hotel Quotation
-
-Room Price: ₹${roomPrice}
-Rooms: ${rooms}
-Days: ${days}
-Guests: ${guests}
-
-Room Cost: ${document.getElementById('baseAmount').innerText}
-Tax: ${document.getElementById('taxAmount').innerText}
-Charge: ${document.getElementById('chargeAmount').innerText}
-
-Final Bill: ${document.getElementById('finalAmount').innerText}
-
-Per Guest Cost: ${document.getElementById('perGuestCost').innerText}`;
-
-    navigator.clipboard.writeText(summary);
-
-    alert("Quotation copied successfully!");
-}
 
 </script>
 
