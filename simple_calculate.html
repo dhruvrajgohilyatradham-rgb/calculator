@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hotel Price Calculator</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:650px;
+    background:#fff;
+    border-radius:20px;
+    padding:30px;
+    box-shadow:0 20px 50px rgba(0,0,0,.25);
+}
+
+h2{
+    text-align:center;
+    color:#0f172a;
+    margin-bottom:25px;
+}
+
+.input-group{
+    margin-bottom:15px;
+}
+
+label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:600;
+    color:#334155;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:1px solid #cbd5e1;
+    border-radius:10px;
+    font-size:16px;
+    outline:none;
+}
+
+input:focus{
+    border-color:#2563eb;
+}
+
+.results{
+    margin-top:25px;
+}
+
+.result-box{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:14px;
+    margin-bottom:10px;
+    background:#f8fafc;
+    border-radius:10px;
+    border-left:4px solid #2563eb;
+}
+
+.result-box span:first-child{
+    font-weight:600;
+    color:#475569;
+}
+
+.result-box span:last-child{
+    font-weight:700;
+    color:#0f172a;
+}
+
+.final{
+    background:#dcfce7;
+    border-left-color:#16a34a;
+}
+
+.final span:last-child{
+    color:#15803d;
+    font-size:18px;
+}
+
+.perguest{
+    background:#eff6ff;
+    border-left-color:#2563eb;
+}
+
+.copy-btn{
+    width:100%;
+    margin-top:15px;
+    padding:14px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:#fff;
+    font-size:16px;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.copy-btn:hover{
+    background:#1d4ed8;
+}
+
+.note{
+    text-align:center;
+    margin-top:15px;
+    color:#64748b;
+    font-size:13px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<h2>Stay Price Calculator</h2>
+
+<div class="input-group">
+    <label>Price Per Room (₹)</label>
+    <input type="number" id="price" placeholder="Enter room price" oninput="calculate()">
+</div>
+
+<div class="input-group">
+    <label>Number of Rooms</label>
+    <input type="number" id="rooms" placeholder="Enter rooms" value="1" oninput="calculate()">
+</div>
+
+<div class="input-group">
+    <label>Number of Days</label>
+    <input type="number" id="days" placeholder="Enter days" value="1" oninput="calculate()">
+</div>
+
+<div class="input-group">
+    <label>Extra Mattress Price (Optional ₹)</label>
+    <input type="number" id="mattressPrice" placeholder="Enter mattress price" value="0" oninput="calculate()">
+</div>
+
+<div class="input-group">
+    <label>Number of Guests</label>
+    <input type="number" id="guests" placeholder="Enter guests" oninput="calculate()">
+</div>
+
+<div class="input-group">
+    <label>Charge Percentage (%)</label>
+    <input type="number" id="chargePercent" placeholder="17 or 18" value="17.34" oninput="calculate()">
+</div>
+
+<div class="results">
+
+```
+<div class="result-box">
+    <span>Room Cost</span>
+    <span id="baseAmount">₹0.00</span>
+</div>
+
+<div class="result-box">
+    <span>5% Tax Amount</span>
+    <span id="taxAmount">₹0.00</span>
+</div>
+
+<div class="result-box">
+    <span>Total After Tax</span>
+    <span id="totalAmount">₹0.00</span>
+</div>
+
+<div class="result-box">
+    <span>Charge Amount</span>
+    <span id="chargeAmount">₹0.00</span>
+</div>
+
+<div class="result-box final">
+    <span>Final Bill Amount</span>
+    <span id="finalAmount">₹0.00</span>
+</div>
+
+<div class="result-box perguest">
+    <span>Per Guest Cost</span>
+    <span id="perGuestCost">₹0.00</span>
+</div>
+
+<div class="result-box">
+    <span>Per Room Per Day</span>
+    <span id="perRoomPerDay">₹0.00</span>
+</div>
+```
+
+</div>
+
+<button class="copy-btn" onclick="copySummary()">
+📋 Copy Summary
+</button>
+
+<div class="note">
+Auto calculates while typing.
+</div>
+
+</div>
+
+<script>
+
+function formatCurrency(amount){
+    return "₹" + amount.toLocaleString('en-IN',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+    });
+}
+
+function calculate(){
+
+    let roomPrice = parseFloat(document.getElementById('price').value) || 0;
+
+let mattressPrice =
+    parseFloat(document.getElementById('mattressPrice').value) || 0;
+
+let rooms = parseInt(document.getElementById('rooms').value) || 0;
+    let days = parseInt(document.getElementById('days').value) || 0;
+    let guests = parseInt(document.getElementById('guests').value) || 1;
+    let chargePercent = parseFloat(document.getElementById('chargePercent').value) || 0;
+
+    let finalRoomPrice = roomPrice + mattressPrice;
+
+let baseAmount = finalRoomPrice * rooms * days;
+
+    let taxAmount = baseAmount * 0.05;
+
+    let totalAmount = baseAmount + taxAmount;
+
+    let chargeAmount = totalAmount * (chargePercent / 100);
+
+    let finalAmount = totalAmount + chargeAmount;
+
+    let perGuestCost = guests > 0 ? finalAmount / guests : 0;
+
+    let perRoomPerDay =
+        (rooms > 0 && days > 0)
+        ? finalAmount / rooms / days
+        : 0;
+
+    document.getElementById('baseAmount').innerText =
+        formatCurrency(baseAmount);
+
+    document.getElementById('taxAmount').innerText =
+        formatCurrency(taxAmount);
+
+    document.getElementById('totalAmount').innerText =
+        formatCurrency(totalAmount);
+
+    document.getElementById('chargeAmount').innerText =
+        formatCurrency(chargeAmount);
+
+    document.getElementById('finalAmount').innerText =
+        formatCurrency(finalAmount);
+
+    document.getElementById('perGuestCost').innerText =
+        formatCurrency(perGuestCost);
+
+    document.getElementById('perRoomPerDay').innerText =
+        formatCurrency(perRoomPerDay);
+}
+
+function copySummary(){
+
+    let roomPrice = document.getElementById('price').value || 0;
+    let rooms = document.getElementById('rooms').value || 0;
+    let days = document.getElementById('days').value || 0;
+    let guests = document.getElementById('guests').value || 0;
+
+    let summary =
+`🏨 Hotel Quotation
+
+Room Price: ₹${roomPrice}
+Rooms: ${rooms}
+Days: ${days}
+Guests: ${guests}
+
+Room Cost: ${document.getElementById('baseAmount').innerText}
+Tax: ${document.getElementById('taxAmount').innerText}
+Charge: ${document.getElementById('chargeAmount').innerText}
+
+Final Bill: ${document.getElementById('finalAmount').innerText}
+
+Per Guest Cost: ${document.getElementById('perGuestCost').innerText}`;
+
+    navigator.clipboard.writeText(summary);
+
+    alert("Quotation copied successfully!");
+}
+
+</script>
+
+</body>
+</html>
