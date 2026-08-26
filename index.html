@@ -1,214 +1,356 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="icon" type="image/png" href="calculator.png">
+<link rel="shortcut icon" type="image/png" href="calculator.png">
 <title>Hotel Price Calculator</title>
 
 <style>
+:root{
+    --blue:#2563eb;
+    --blue-dark:#1d4ed8;
+    --green:#16a34a;
+    --amber:#d97706;
+    --ink:#0f172a;
+    --muted:#64748b;
+}
+
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
+    font-family:'Segoe UI',system-ui,sans-serif;
+}
+
+html,body{
+    height:100%;
 }
 
 body{
     background:linear-gradient(135deg,#0f172a,#1e293b);
-    min-height:100vh;
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:20px;
+    padding:12px;
+    overflow:hidden;
 }
 
 .container{
     width:100%;
-    max-width:650px;
+    max-width:920px;
+    max-height:96vh;
     background:#fff;
-    border-radius:20px;
-    padding:30px;
-    box-shadow:0 20px 50px rgba(0,0,0,.25);
+    border-radius:16px;
+    padding:18px 22px;
+    box-shadow:0 20px 50px rgba(0,0,0,.3);
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    overflow:auto;
 }
 
 h2{
     text-align:center;
-    color:#0f172a;
-    margin-bottom:25px;
+    color:var(--ink);
+    font-size:19px;
 }
 
-.input-group{
-    margin-bottom:15px;
+/* ---------- Inputs ---------- */
+.inputs{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:8px 12px;
 }
 
-label{
+.input-group label{
     display:block;
-    margin-bottom:8px;
+    margin-bottom:3px;
     font-weight:600;
     color:#334155;
+    font-size:11.5px;
+    white-space:nowrap;
 }
 
-input{
+.input-group input{
     width:100%;
-    padding:12px;
+    padding:8px 9px;
     border:1px solid #cbd5e1;
-    border-radius:10px;
-    font-size:16px;
+    border-radius:8px;
+    font-size:14px;
     outline:none;
 }
 
-input:focus{
-    border-color:#2563eb;
+.input-group input:focus{
+    border-color:var(--blue);
 }
 
-.results{
-    margin-top:25px;
+.charge-row{
+    grid-column:span 2;
 }
 
-.result-box{
+.charge-row.discount label{color:var(--amber);}
+.charge-row.discount input:focus{border-color:var(--amber);}
+
+/* ---------- Base results strip ---------- */
+.base-results{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+}
+
+.mini-box{
+    background:#f8fafc;
+    border-left:3px solid var(--blue);
+    border-radius:8px;
+    padding:7px 10px;
+}
+
+.mini-box span:first-child{
+    display:block;
+    font-size:10.5px;
+    font-weight:600;
+    color:var(--muted);
+}
+
+.mini-box span:last-child{
+    display:block;
+    font-size:14.5px;
+    font-weight:700;
+    color:var(--ink);
+}
+
+/* ---------- Comparison panels ---------- */
+.compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+}
+
+.panel{
+    border-radius:12px;
+    padding:12px 14px;
+    display:flex;
+    flex-direction:column;
+    gap:6px;
+}
+
+.panel.standard{
+    background:#eff6ff;
+    border:1.5px solid #bfdbfe;
+}
+
+.panel.discount{
+    background:#fffbeb;
+    border:1.5px solid #fde68a;
+}
+
+.panel-title{
     display:flex;
     justify-content:space-between;
-    align-items:center;
-    padding:14px;
-    margin-bottom:10px;
-    background:#f8fafc;
-    border-radius:10px;
-    border-left:4px solid #2563eb;
+    align-items:baseline;
+    margin-bottom:2px;
 }
 
-.result-box span:first-child{
-    font-weight:600;
+.panel-title span:first-child{
+    font-weight:700;
+    font-size:13px;
+    color:var(--ink);
+}
+
+.panel-title span:last-child{
+    font-size:12px;
+    font-weight:700;
+}
+
+.panel.standard .panel-title span:last-child{color:var(--blue);}
+.panel.discount .panel-title span:last-child{color:var(--amber);}
+
+.row{
+    display:flex;
+    justify-content:space-between;
+    font-size:12.5px;
     color:#475569;
 }
 
-.result-box span:last-child{
+.row span:last-child{
+    font-weight:600;
+    color:var(--ink);
+}
+
+.final-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:4px;
+    padding-top:6px;
+    border-top:1px dashed rgba(0,0,0,.15);
+}
+
+.final-row span:first-child{
+    font-size:12.5px;
     font-weight:700;
-    color:#0f172a;
+    color:#334155;
 }
 
-.final{
+.final-row span:last-child{
+    font-size:19px;
+    font-weight:800;
+}
+
+.panel.standard .final-row span:last-child{color:var(--blue-dark);}
+.panel.discount .final-row span:last-child{color:var(--amber);}
+
+.perguest-row{
+    display:flex;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--muted);
+}
+
+/* ---------- Savings banner ---------- */
+.savings{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
     background:#dcfce7;
-    border-left-color:#16a34a;
+    border-left:4px solid var(--green);
+    border-radius:10px;
+    padding:10px 14px;
 }
 
-.final span:last-child{
+.savings span:first-child{
+    font-weight:600;
+    color:#166534;
+    font-size:13px;
+}
+
+.savings span:last-child{
+    font-weight:800;
     color:#15803d;
     font-size:18px;
 }
 
-.perguest{
-    background:#eff6ff;
-    border-left-color:#2563eb;
-}
-
+/* ---------- Copy button ---------- */
 .copy-btn{
     width:100%;
-    margin-top:15px;
-    padding:14px;
+    padding:11px;
     border:none;
     border-radius:10px;
-    background:#2563eb;
+    background:var(--blue);
     color:#fff;
-    font-size:16px;
+    font-size:14.5px;
     font-weight:600;
     cursor:pointer;
+    transition:background .15s;
 }
 
 .copy-btn:hover{
-    background:#1d4ed8;
+    background:var(--blue-dark);
 }
 
-.note{
-    text-align:center;
-    margin-top:15px;
-    color:#64748b;
-    font-size:13px;
+.copy-btn.copied{
+    background:var(--green);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width:640px){
+    body{overflow:auto;align-items:flex-start;}
+    .container{max-height:none;}
+    .inputs{grid-template-columns:repeat(2,1fr);}
+    .charge-row{grid-column:span 2;}
+    .base-results{grid-template-columns:1fr 1fr;}
+    .compare{grid-template-columns:1fr;}
 }
 </style>
-
 </head>
 <body>
 
 <div class="container">
 
-<h2>Stay Price Calculator</h2>
+    <h2>Stay Price Calculator</h2>
 
-<div class="input-group">
-    <label>Price Per Room (₹)</label>
-    <input type="number" id="price" placeholder="Enter room price" oninput="calculate()">
-</div>
+    <div class="inputs">
+        <div class="input-group">
+            <label>Price / Room (₹)</label>
+            <input type="number" id="price" placeholder="0" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Rooms</label>
+            <input type="number" id="rooms" placeholder="1" value="1" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Days</label>
+            <input type="number" id="days" placeholder="1" value="1" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Guests</label>
+            <input type="number" id="guests" placeholder="1" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Extra Mattress (₹)</label>
+            <input type="number" id="mattressPrice" placeholder="0" value="0" oninput="calculate()">
+        </div>
+        <div class="input-group">
+            <label>Tax (%)</label>
+            <input type="number" id="txtFiled" value="5" oninput="calculate()">
+        </div>
+        <div class="input-group charge-row">
+            <label>Standard Platform Charge (%)</label>
+            <input type="number" id="chargePercent" value="17.34" oninput="calculate()">
+        </div>
+        <div class="input-group charge-row discount">
+            <label>Discounted Platform Charge (%)</label>
+            <input type="number" id="discountPercent" value="17.34" oninput="calculate()">
+        </div>
+    </div>
 
-<div class="input-group">
-    <label>Number of Rooms</label>
-    <input type="number" id="rooms" placeholder="Enter rooms" value="1" oninput="calculate()">
-</div>
+    <div class="base-results">
+        <div class="mini-box">
+            <span>Room Cost</span>
+            <span id="baseAmount">₹0.00</span>
+        </div>
+        <div class="mini-box">
+            <span>Tax Amount</span>
+            <span id="taxAmount">₹0.00</span>
+        </div>
+        <div class="mini-box">
+            <span>Total After Tax</span>
+            <span id="totalAmount">₹0.00</span>
+        </div>
+    </div>
 
-<div class="input-group">
-    <label>Number of Days</label>
-    <input type="number" id="days" placeholder="Enter days" value="1" oninput="calculate()">
-</div>
+    <div class="compare">
+        <div class="panel standard">
+            <div class="panel-title">
+                <span>Standard Charge</span>
+                <span id="stdPercentLabel">17.34%</span>
+            </div>
+            <div class="row"><span>Charge Amount</span><span id="stdChargeAmount">₹0.00</span></div>
+            <div class="final-row"><span>Final Bill</span><span id="stdFinalAmount">₹0.00</span></div>
+            <div class="perguest-row"><span>Per Guest</span><span id="stdPerGuest">₹0.00</span></div>
+            <div class="perguest-row"><span>Per Room/Day</span><span id="stdPerRoomDay">₹0.00</span></div>
+        </div>
 
-<div class="input-group">
-    <label>Extra Mattress Price (Optional ₹)</label>
-    <input type="number" id="mattressPrice" placeholder="Enter mattress price" value="0" oninput="calculate()">
-</div>
+        <div class="panel discount">
+            <div class="panel-title">
+                <span>Discounted Charge</span>
+                <span id="discPercentLabel">12%</span>
+            </div>
+            <div class="row"><span>Charge Amount</span><span id="discChargeAmount">₹0.00</span></div>
+            <div class="final-row"><span>Final Bill</span><span id="discFinalAmount">₹0.00</span></div>
+            <div class="perguest-row"><span>Per Guest</span><span id="discPerGuest">₹0.00</span></div>
+            <div class="perguest-row"><span>Per Room/Day</span><span id="discPerRoomDay">₹0.00</span></div>
+        </div>
+    </div>
 
-<div class="input-group">
-    <label>Number of Guests</label>
-    <input type="number" id="guests" placeholder="Enter guests" oninput="calculate()">
-</div>
+    <div class="savings">
+        <span>You Save with Discounted Charge</span>
+        <span id="savingsAmount">₹0.00</span>
+    </div>
 
-<div class="input-group">
-    <label>Charge Percentage (%)</label>
-    <input type="number" id="chargePercent" placeholder="17 or 18" value="17.34" oninput="calculate()">
-</div>
-
-<div class="input-group">
-    <label>tax (%)</label>
-    <input type="number" id="txtFiled" value="5" oninput="calculate()">
-</div>
-
-<div class="results">
-
-```
-<div class="result-box">
-    <span>Room Cost</span>
-    <span id="baseAmount">₹0.00</span>
-</div>
-
-<div class="result-box">
-    <span>5% Tax Amount</span>
-    <span id="taxAmount">₹0.00</span>
-</div>
-
-<div class="result-box">
-    <span>Total After Tax</span>
-    <span id="totalAmount">₹0.00</span>
-</div>
-
-<div class="result-box">
-    <span>Charge Amount</span>
-    <span id="chargeAmount">₹0.00</span>
-</div>
-
-<div class="result-box final">
-    <span>Final Bill Amount</span>
-    <span id="finalAmount">₹0.00</span>
-</div>
-
-<div class="result-box perguest">
-    <span>Per Guest Cost</span>
-    <span id="perGuestCost">₹0.00</span>
-</div>
-
-<div class="result-box">
-    <span>Per Room Per Day</span>
-    <span id="perRoomPerDay">₹0.00</span>
-</div>
-```
-
-</div>
+    <button class="copy-btn" id="copyBtn" onclick="copyResult()">Copy Final Bill Summary</button>
 
 </div>
 
@@ -221,61 +363,92 @@ function formatCurrency(amount){
     });
 }
 
+let last = {};
+
 function calculate(){
 
     let roomPrice = parseFloat(document.getElementById('price').value) || 0;
-
-let mattressPrice =
-    parseFloat(document.getElementById('mattressPrice').value) || 0;
-
-let rooms = parseInt(document.getElementById('rooms').value) || 0;
+    let mattressPrice = parseFloat(document.getElementById('mattressPrice').value) || 0;
+    let rooms = parseInt(document.getElementById('rooms').value) || 0;
     let days = parseInt(document.getElementById('days').value) || 0;
     let guests = parseInt(document.getElementById('guests').value) || 1;
-    let chargePercent = parseFloat(document.getElementById('chargePercent').value) || 0;
+    let stdPercent = parseFloat(document.getElementById('chargePercent').value) || 0;
+    let discPercent = parseFloat(document.getElementById('discountPercent').value) || 0;
     let txtFiled = parseFloat(document.getElementById('txtFiled').value) || 0;
 
     let finalRoomPrice = roomPrice + mattressPrice;
-
-let baseAmount = finalRoomPrice * rooms * days;
-
+    let baseAmount = finalRoomPrice * rooms * days;
     let taxAmount = baseAmount * (txtFiled / 100);
-
     let totalAmount = baseAmount + taxAmount;
 
-    let chargeAmount = totalAmount * (chargePercent / 100);
+    // Standard charge panel
+    let stdChargeAmount = totalAmount * (stdPercent / 100);
+    let stdFinalAmount = totalAmount + stdChargeAmount;
+    let stdPerGuest = guests > 0 ? stdFinalAmount / guests : 0;
+    let stdPerRoomDay = (rooms > 0 && days > 0) ? stdFinalAmount / rooms / days : 0;
 
-    let finalAmount = totalAmount + chargeAmount;
+    // Discounted charge panel
+    let discChargeAmount = totalAmount * (discPercent / 100);
+    let discFinalAmount = totalAmount + discChargeAmount;
+    let discPerGuest = guests > 0 ? discFinalAmount / guests : 0;
+    let discPerRoomDay = (rooms > 0 && days > 0) ? discFinalAmount / rooms / days : 0;
 
-    let perGuestCost = guests > 0 ? finalAmount / guests : 0;
+    let savings = stdFinalAmount - discFinalAmount;
 
-    let perRoomPerDay =
-        (rooms > 0 && days > 0)
-        ? finalAmount / rooms / days
-        : 0;
+    document.getElementById('baseAmount').innerText = formatCurrency(baseAmount);
+    document.getElementById('taxAmount').innerText = formatCurrency(taxAmount);
+    document.getElementById('totalAmount').innerText = formatCurrency(totalAmount);
 
-    document.getElementById('baseAmount').innerText =
-        formatCurrency(baseAmount);
+    document.getElementById('stdPercentLabel').innerText = stdPercent + "%";
+    document.getElementById('stdChargeAmount').innerText = formatCurrency(stdChargeAmount);
+    document.getElementById('stdFinalAmount').innerText = formatCurrency(stdFinalAmount);
+    document.getElementById('stdPerGuest').innerText = formatCurrency(stdPerGuest);
+    document.getElementById('stdPerRoomDay').innerText = formatCurrency(stdPerRoomDay);
 
-    document.getElementById('taxAmount').innerText =
-        formatCurrency(taxAmount);
+    document.getElementById('discPercentLabel').innerText = discPercent + "%";
+    document.getElementById('discChargeAmount').innerText = formatCurrency(discChargeAmount);
+    document.getElementById('discFinalAmount').innerText = formatCurrency(discFinalAmount);
+    document.getElementById('discPerGuest').innerText = formatCurrency(discPerGuest);
+    document.getElementById('discPerRoomDay').innerText = formatCurrency(discPerRoomDay);
 
-    document.getElementById('totalAmount').innerText =
-        formatCurrency(totalAmount);
+    document.getElementById('savingsAmount').innerText = formatCurrency(Math.max(savings,0));
 
-    document.getElementById('chargeAmount').innerText =
-        formatCurrency(chargeAmount);
+    last = {
+        rooms, days, guests, stdPercent, discPercent,
+        baseAmount, taxAmount, totalAmount,
+        stdFinalAmount, discFinalAmount, savings
+    };
 
-    document.getElementById('finalAmount').innerText =
-        formatCurrency(finalAmount);
-
-    document.getElementById('perGuestCost').innerText =
-        formatCurrency(perGuestCost);
-
-    document.getElementById('perRoomPerDay').innerText =
-        formatCurrency(perRoomPerDay);
+    // reset copy button state on any change
+    let btn = document.getElementById('copyBtn');
+    btn.innerText = "Copy Final Bill Summary";
+    btn.classList.remove('copied');
 }
 
+function copyResult(){
+    let text =
+`Stay Price Summary
+Rooms: ${last.rooms} | Days: ${last.days} | Guests: ${last.guests}
+Room Cost: ${formatCurrency(last.baseAmount)}
+Tax: ${formatCurrency(last.taxAmount)}
+Total After Tax: ${formatCurrency(last.totalAmount)}
+---
+Standard (${last.stdPercent}%) Final Bill: ${formatCurrency(last.stdFinalAmount)}
+Discounted (${last.discPercent}%) Final Bill: ${formatCurrency(last.discFinalAmount)}
+You Save: ${formatCurrency(Math.max(last.savings,0))}`;
 
+    navigator.clipboard.writeText(text).then(()=>{
+        let btn = document.getElementById('copyBtn');
+        btn.innerText = "Copied!";
+        btn.classList.add('copied');
+        setTimeout(()=>{
+            btn.innerText = "Copy Final Bill Summary";
+            btn.classList.remove('copied');
+        },1500);
+    });
+}
+
+calculate();
 
 </script>
 
