@@ -2,60 +2,221 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <link rel="icon" type="image/png" href="calculator.png">
 <link rel="shortcut icon" type="image/png" href="calculator.png">
 <title>Hotel Price Calculator</title>
 
 <style>
+/* =====================================================
+   DEFAULT LOOK = original version (blue / white card)
+   Custom look only turns on after the user uses Customize
+   ===================================================== */
 :root{
-    --blue:#2563eb;
-    --blue-dark:#1d4ed8;
-    --green:#16a34a;
-    --amber:#d97706;
-    --ink:#0f172a;
-    --muted:#64748b;
+    --h:255; --csat:78%;
+
+    --bg0:#0f172a;
+    --page-bg:linear-gradient(135deg,#0f172a,#1e293b);
+    --card-bg:#fff; --card-bd:transparent; --card-shadow:0 20px 50px rgba(0,0,0,.3);
+    --blur:0px;
+
+    --tx:#0f172a; --lab:#334155; --row:#475569; --mu:#64748b;
+    --ln:#cbd5e1; --inbg:#fff; --sf:#fff; --s2:#f1f5f9; --pop:#fff;
+
+    --ac:#2563eb; --ac2:#d97706; --green:#16a34a;
+    --fill:var(--ac); --ink:#fff; --hov:brightness(.9); --ring:none;
+
+    --mini:#f8fafc; --dash:rgba(0,0,0,.15);
+    --p1bg:#eff6ff; --p1bd:#bfdbfe; --p2bg:#fffbeb; --p2bd:#fde68a;
+    --std-t:#2563eb; --std-f:#1d4ed8; --dis-t:#d97706; --dis-f:#d97706;
+    --sav:#dcfce7; --sav-t:#166534; --sav-v:#15803d;
+
+    --cb-bg:rgba(255,255,255,.14); --cb-tx:#fff; --cb-bd:rgba(255,255,255,.28);
+    color-scheme:light;
 }
 
+/* ---------- CUSTOM LOOK (after user customizes) ---------- */
+:root[data-custom="1"]{
+    --sat:var(--csat);
+    --l:52%; --gl:76%; --bgL:96%; --sfL:99%; --s2L:93%; --lnL:88%; --txL:13%; --muL:40%; --actL:38%;
+    --ink:#fff; --sw:.32; --ns:calc(var(--sat) * .5);
+
+    --ac:hsl(var(--h) var(--sat) var(--l));
+    --ac2:hsl(calc(var(--h) + 60) var(--sat) var(--l));
+    --act:hsl(var(--h) var(--sat) var(--actL));
+    --act2:hsl(calc(var(--h) + 60) var(--sat) var(--actL));
+
+    --bgc:hsl(var(--h) var(--ns) var(--bgL));
+    --sf:hsl(var(--h) var(--ns) var(--sfL));
+    --s2:hsl(var(--h) var(--ns) var(--s2L));
+    --ln:hsl(var(--h) var(--ns) var(--lnL));
+    --tx:hsl(var(--h) 25% var(--txL));
+    --mu:hsl(var(--h) 12% var(--muL));
+    --gr:hsl(142 65% 33%);
+    --green:hsl(142 65% 38%);
+
+    --fill:linear-gradient(125deg,var(--ac),var(--ac2));
+    --cd:hsl(var(--h) var(--ns) var(--sfL) / .72);
+    --blur:16px;
+    --shadow:0 24px 48px -26px hsl(var(--h) 70% 25% / var(--sw));
+    --mesh:
+        radial-gradient(55vw 46vh at 10% -8%,hsl(var(--h) 90% var(--gl) / .55),transparent 70%),
+        radial-gradient(50vw 44vh at 100% 2%,hsl(calc(var(--h) + 60) 90% var(--gl) / .45),transparent 70%),
+        radial-gradient(60vw 40vh at 55% 112%,hsl(calc(var(--h) + 30) 90% var(--gl) / .35),transparent 70%);
+
+    --bg0:var(--bgc); --page-bg:var(--mesh);
+    --card-bg:var(--cd); --card-bd:var(--ln); --card-shadow:var(--shadow);
+    --lab:var(--mu); --row:var(--mu); --inbg:var(--sf); --pop:var(--sf); --mini:var(--s2);
+    --p1bg:color-mix(in srgb,var(--ac) 11%,var(--sf));
+    --p1bd:color-mix(in srgb,var(--ac) 38%,transparent);
+    --p2bg:color-mix(in srgb,var(--ac2) 11%,var(--sf));
+    --p2bd:color-mix(in srgb,var(--ac2) 38%,transparent);
+    --std-t:var(--act); --std-f:var(--act); --dis-t:var(--act2); --dis-f:var(--act2);
+    --sav:color-mix(in srgb,var(--green) 15%,var(--sf));
+    --sav-t:var(--gr); --sav-v:var(--gr);
+    --dash:var(--ln);
+    --ring:0 0 0 3px color-mix(in srgb,var(--ac) 22%,transparent);
+    --hov:brightness(1.07);
+    --cb-bg:var(--cd); --cb-tx:var(--tx); --cb-bd:var(--ln);
+}
+@media (prefers-color-scheme:dark){
+    :root[data-custom="1"]:not([data-theme="light"]){
+        --l:68%; --gl:38%; --bgL:7%; --sfL:11%; --s2L:16%; --lnL:22%; --txL:94%; --muL:66%;
+        --actL:72%; --ink:#0b0b14; --sw:.7; --gr:hsl(142 60% 62%); --green:hsl(142 55% 58%);
+        color-scheme:dark;
+    }
+}
+:root[data-custom="1"][data-theme="dark"]{
+    --l:68%; --gl:38%; --bgL:7%; --sfL:11%; --s2L:16%; --lnL:22%; --txL:94%; --muL:66%;
+    --actL:72%; --ink:#0b0b14; --sw:.7; --gr:hsl(142 60% 62%); --green:hsl(142 55% 58%);
+    color-scheme:dark;
+}
+:root[data-custom="1"][data-style="matte"]{
+    --sat:calc(var(--csat) * .45);
+    --fill:var(--ac); --cd:var(--sf); --blur:0px; --shadow:none; --mesh:none;
+}
+/* light accents (yellow, lime...) need dark button text */
+:root[data-custom="1"][data-dk="1"]{--ink:#111 !important}
+
+/* ===================== BASE ===================== */
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
     font-family:'Segoe UI',system-ui,sans-serif;
 }
-
-html,body{
-    height:100%;
-}
-
+html,body{height:100%}
 body{
-    background:linear-gradient(135deg,#0f172a,#1e293b);
+    background-color:var(--bg0);
+    background-image:var(--page-bg);
+    background-repeat:no-repeat;
+    background-attachment:fixed;
     display:flex;
     justify-content:center;
     align-items:center;
-    padding:12px;
+    padding:56px 12px 12px;
     overflow:hidden;
 }
+:focus-visible{outline:2px solid var(--ac);outline-offset:2px}
 
+/* ===================== CUSTOMIZE BUTTON + PANEL ===================== */
+.cust{
+    position:fixed;
+    top:calc(10px + env(safe-area-inset-top,0px));
+    left:12px;
+    z-index:60;
+}
+.cust-btn{
+    display:flex;align-items:center;gap:8px;
+    background:var(--cb-bg);color:var(--cb-tx);
+    border:1px solid var(--cb-bd);border-radius:99px;
+    padding:8px 14px 8px 11px;
+    font-size:13px;font-weight:600;cursor:pointer;
+    -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);
+    transition:transform .12s,border-color .15s;
+}
+.cust-btn:hover{border-color:var(--ac)}
+.cust-btn:active{transform:scale(.97)}
+
+.cust-panel{
+    display:none;
+    position:absolute;left:0;top:calc(100% + 8px);
+    width:min(330px,92vw);max-height:min(78vh,560px);overflow:auto;
+    background:var(--pop);color:var(--tx);
+    border:1px solid var(--ln);border-radius:16px;
+    padding:14px;
+    box-shadow:0 24px 60px -20px rgba(0,0,0,.5);
+    flex-direction:column;gap:14px;
+}
+.cust.open .cust-panel{display:flex}
+.cust-sec>label{
+    display:block;margin-bottom:6px;
+    font-size:11.5px;font-weight:700;color:var(--mu);
+}
+
+/* color dropdown */
+.dd-btn{
+    width:100%;
+    display:flex;align-items:center;gap:9px;
+    background:var(--inbg);color:var(--tx);
+    border:1px solid var(--ln);border-radius:10px;
+    padding:8px 10px;font-size:13.5px;font-weight:600;cursor:pointer;
+}
+.dd-btn:hover,.dd-btn[aria-expanded="true"]{border-color:var(--ac)}
+.dd-btn .name{flex:1;text-align:left}
+.dd-btn .chev{transition:transform .2s;color:var(--mu)}
+.dd-btn[aria-expanded="true"] .chev{transform:rotate(180deg)}
+.dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.14)}
+.dd-list{
+    display:none;margin-top:6px;
+    grid-template-columns:repeat(2,1fr);gap:3px;
+    max-height:230px;overflow:auto;
+    border:1px solid var(--ln);border-radius:12px;padding:6px;
+    background:var(--inbg);
+}
+.dd-list.show{display:grid}
+.opt{
+    display:flex;align-items:center;gap:9px;
+    border:0;background:transparent;color:var(--tx);
+    padding:7px 8px;border-radius:9px;cursor:pointer;
+    font-size:13px;font-weight:600;text-align:left;
+}
+.opt:hover{background:var(--s2)}
+.opt.on{background:var(--s2);box-shadow:inset 0 0 0 1.5px var(--ac)}
+
+/* segmented controls */
+.seg{display:flex;background:var(--s2);border-radius:99px;padding:3px}
+.seg button{
+    flex:1;border:0;background:transparent;color:var(--mu);
+    font-size:12.5px;font-weight:700;padding:7px 12px;border-radius:99px;cursor:pointer;
+    transition:all .2s;
+}
+.seg button.on{background:var(--fill);color:var(--ink)}
+
+.reset{
+    border:1px solid var(--ln);background:transparent;color:var(--tx);
+    border-radius:10px;padding:9px;font-size:13px;font-weight:600;cursor:pointer;
+}
+.reset:hover{border-color:var(--ac)}
+
+/* ===================== CALCULATOR CARD ===================== */
 .container{
     width:100%;
     max-width:920px;
-    max-height:96vh;
-    background:#fff;
+    max-height:calc(100vh - 68px);
+    background:var(--card-bg);
+    -webkit-backdrop-filter:blur(var(--blur));backdrop-filter:blur(var(--blur));
+    border:1px solid var(--card-bd);
     border-radius:16px;
     padding:18px 22px;
-    box-shadow:0 20px 50px rgba(0,0,0,.3);
+    box-shadow:var(--card-shadow);
     display:flex;
     flex-direction:column;
     gap:12px;
     overflow:auto;
 }
 
-h2{
-    text-align:center;
-    color:var(--ink);
-    font-size:19px;
-}
+h2{text-align:center;color:var(--tx);font-size:19px}
 
 /* ---------- Inputs ---------- */
 .inputs{
@@ -63,209 +224,139 @@ h2{
     grid-template-columns:repeat(4,1fr);
     gap:8px 12px;
 }
-
 .input-group label{
-    display:block;
-    margin-bottom:3px;
-    font-weight:600;
-    color:#334155;
-    font-size:11.5px;
-    white-space:nowrap;
+    display:block;margin-bottom:3px;
+    font-weight:600;color:var(--lab);
+    font-size:11.5px;white-space:nowrap;
 }
-
 .input-group input{
     width:100%;
     padding:8px 9px;
-    border:1px solid #cbd5e1;
+    border:1px solid var(--ln);
     border-radius:8px;
-    font-size:14px;
-    outline:none;
+    background:var(--inbg);color:var(--tx);
+    font-size:14px;outline:none;
+    transition:border-color .15s,box-shadow .15s;
 }
-
-.input-group input:focus{
-    border-color:var(--blue);
+.input-group input:focus{border-color:var(--ac);box-shadow:var(--ring)}
+.charge-row{grid-column:span 2}
+.charge-row.discount label{color:var(--dis-t)}
+.charge-row.discount input:focus{
+    border-color:var(--ac2);
+    box-shadow:var(--ring);
 }
-
-.charge-row{
-    grid-column:span 2;
-}
-
-.charge-row.discount label{color:var(--amber);}
-.charge-row.discount input:focus{border-color:var(--amber);}
 
 /* ---------- Base results strip ---------- */
-.base-results{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-}
-
+.base-results{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
 .mini-box{
-    background:#f8fafc;
-    border-left:3px solid var(--blue);
+    background:var(--mini);
+    border-left:3px solid var(--ac);
     border-radius:8px;
     padding:7px 10px;
 }
-
-.mini-box span:first-child{
-    display:block;
-    font-size:10.5px;
-    font-weight:600;
-    color:var(--muted);
-}
-
-.mini-box span:last-child{
-    display:block;
-    font-size:14.5px;
-    font-weight:700;
-    color:var(--ink);
-}
+.mini-box span:first-child{display:block;font-size:10.5px;font-weight:600;color:var(--mu)}
+.mini-box span:last-child{display:block;font-size:14.5px;font-weight:700;color:var(--tx)}
 
 /* ---------- Comparison panels ---------- */
-.compare{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:12px;
-}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.panel{border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.panel.standard{background:var(--p1bg);border:1.5px solid var(--p1bd)}
+.panel.discount{background:var(--p2bg);border:1.5px solid var(--p2bd)}
 
-.panel{
-    border-radius:12px;
-    padding:12px 14px;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-}
+.panel-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px}
+.panel-title span:first-child{font-weight:700;font-size:13px;color:var(--tx)}
+.panel-title span:last-child{font-size:12px;font-weight:700}
+.panel.standard .panel-title span:last-child{color:var(--std-t)}
+.panel.discount .panel-title span:last-child{color:var(--dis-t)}
 
-.panel.standard{
-    background:#eff6ff;
-    border:1.5px solid #bfdbfe;
-}
-
-.panel.discount{
-    background:#fffbeb;
-    border:1.5px solid #fde68a;
-}
-
-.panel-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:baseline;
-    margin-bottom:2px;
-}
-
-.panel-title span:first-child{
-    font-weight:700;
-    font-size:13px;
-    color:var(--ink);
-}
-
-.panel-title span:last-child{
-    font-size:12px;
-    font-weight:700;
-}
-
-.panel.standard .panel-title span:last-child{color:var(--blue);}
-.panel.discount .panel-title span:last-child{color:var(--amber);}
-
-.row{
-    display:flex;
-    justify-content:space-between;
-    font-size:12.5px;
-    color:#475569;
-}
-
-.row span:last-child{
-    font-weight:600;
-    color:var(--ink);
-}
+.row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--row)}
+.row span:last-child{font-weight:600;color:var(--tx)}
 
 .final-row{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-top:4px;
-    padding-top:6px;
-    border-top:1px dashed rgba(0,0,0,.15);
+    display:flex;justify-content:space-between;align-items:center;
+    margin-top:4px;padding-top:6px;
+    border-top:1px dashed var(--dash);
 }
+.final-row span:first-child{font-size:12.5px;font-weight:700;color:var(--lab)}
+.final-row span:last-child{font-size:19px;font-weight:800}
+.panel.standard .final-row span:last-child{color:var(--std-f)}
+.panel.discount .final-row span:last-child{color:var(--dis-f)}
 
-.final-row span:first-child{
-    font-size:12.5px;
-    font-weight:700;
-    color:#334155;
-}
-
-.final-row span:last-child{
-    font-size:19px;
-    font-weight:800;
-}
-
-.panel.standard .final-row span:last-child{color:var(--blue-dark);}
-.panel.discount .final-row span:last-child{color:var(--amber);}
-
-.perguest-row{
-    display:flex;
-    justify-content:space-between;
-    font-size:11.5px;
-    color:var(--muted);
-}
+.perguest-row{display:flex;justify-content:space-between;font-size:11.5px;color:var(--mu)}
 
 /* ---------- Savings banner ---------- */
 .savings{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    background:#dcfce7;
+    display:flex;justify-content:space-between;align-items:center;
+    background:var(--sav);
     border-left:4px solid var(--green);
     border-radius:10px;
     padding:10px 14px;
 }
-
-.savings span:first-child{
-    font-weight:600;
-    color:#166534;
-    font-size:13px;
-}
-
-.savings span:last-child{
-    font-weight:800;
-    color:#15803d;
-    font-size:18px;
-}
+.savings span:first-child{font-weight:600;color:var(--sav-t);font-size:13px}
+.savings span:last-child{font-weight:800;color:var(--sav-v);font-size:18px}
 
 /* ---------- Copy button ---------- */
 .copy-btn{
-    width:100%;
-    padding:11px;
-    border:none;
-    border-radius:10px;
-    background:var(--blue);
-    color:#fff;
-    font-size:14.5px;
-    font-weight:600;
-    cursor:pointer;
-    transition:background .15s;
+    width:100%;padding:11px;border:none;border-radius:10px;
+    background:var(--fill);color:var(--ink);
+    font-size:14.5px;font-weight:600;cursor:pointer;
+    transition:filter .15s,transform .12s;
 }
-
-.copy-btn:hover{
-    background:var(--blue-dark);
-}
-
-.copy-btn.copied{
-    background:var(--green);
-}
+.copy-btn:hover{filter:var(--hov)}
+.copy-btn:active{transform:scale(.985)}
+.copy-btn.copied{background:var(--green);color:#fff}
 
 /* ---------- Responsive ---------- */
 @media (max-width:640px){
-    body{overflow:auto;align-items:flex-start;}
-    .container{max-height:none;}
-    .inputs{grid-template-columns:repeat(2,1fr);}
-    .charge-row{grid-column:span 2;}
-    .base-results{grid-template-columns:1fr 1fr;}
-    .compare{grid-template-columns:1fr;}
+    body{overflow:auto;align-items:flex-start}
+    .container{max-height:none}
+    .inputs{grid-template-columns:repeat(2,1fr)}
+    .charge-row{grid-column:span 2}
+    .base-results{grid-template-columns:1fr 1fr}
+    .compare{grid-template-columns:1fr}
 }
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
+
+<!-- ============ Customize (hidden until clicked) ============ -->
+<div class="cust" id="cust">
+    <button class="cust-btn" id="custBtn" aria-expanded="false" aria-haspopup="true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a10 10 0 1 1 10-10c0 2.8-2.2 4-4.5 4H15a2 2 0 0 0-1.5 3.3c.6.7.4 2.7-1.5 2.7z"/><circle cx="7.5" cy="11" r="1"/><circle cx="12" cy="7" r="1"/><circle cx="16.5" cy="11" r="1"/></svg>
+        Customize
+    </button>
+
+    <div class="cust-panel" id="custPanel">
+        <div class="cust-sec">
+            <label>Color</label>
+            <button class="dd-btn" id="ddBtn" aria-expanded="false" aria-haspopup="listbox">
+                <span class="dot" id="ddDot"></span>
+                <span class="name" id="ddName">Default</span>
+                <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <div class="dd-list" id="ddList" role="listbox" aria-label="Colors"></div>
+        </div>
+
+        <div class="cust-sec">
+            <label>Style</label>
+            <div class="seg" id="segStyle" role="group" aria-label="Style">
+                <button data-s="gradient">Gradient</button>
+                <button data-s="matte">Matte</button>
+            </div>
+        </div>
+
+        <div class="cust-sec">
+            <label>Mode</label>
+            <div class="seg" id="segMode" role="group" aria-label="Mode">
+                <button data-m="light">Light</button>
+                <button data-m="dark">Dark</button>
+            </div>
+        </div>
+
+        <button class="reset" id="reset">Reset to default look</button>
+    </div>
+</div>
 
 <div class="container">
 
@@ -355,7 +446,7 @@ h2{
 </div>
 
 <script>
-
+/* ===================== CALCULATOR (unchanged) ===================== */
 function formatCurrency(amount){
     return "₹" + amount.toLocaleString('en-IN',{
         minimumFractionDigits:2,
@@ -448,8 +539,120 @@ You Save: ${formatCurrency(Math.max(last.savings,0))}`;
     });
 }
 
-calculate();
+/* ===================== CUSTOMIZE ===================== */
+const COLORS = [
+    {n:'Violet',    h:255, s:78},
+    {n:'Indigo',    h:235, s:72},
+    {n:'Royal Blue',h:220, s:80},
+    {n:'Ocean',     h:205, s:82},
+    {n:'Sky',       h:192, s:85},
+    {n:'Cyan',      h:182, s:80},
+    {n:'Teal',      h:170, s:75},
+    {n:'Emerald',   h:152, s:70},
+    {n:'Green',     h:130, s:62},
+    {n:'Lime',      h:90,  s:68, dk:1},
+    {n:'Yellow',    h:50,  s:90, dk:1},
+    {n:'Gold',      h:42,  s:88, dk:1},
+    {n:'Amber',     h:30,  s:90, dk:1},
+    {n:'Orange',    h:20,  s:88},
+    {n:'Red',       h:2,   s:80},
+    {n:'Rose',      h:345, s:78},
+    {n:'Pink',      h:325, s:78},
+    {n:'Fuchsia',   h:300, s:70},
+    {n:'Purple',    h:278, s:68},
+    {n:'Slate',     h:215, s:22}
+];
 
+const store = {
+    get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } },
+    set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} },
+    del(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+const root = document.documentElement;
+const $ = id => document.getElementById(id);
+const swatch = c => `hsl(${c.h} ${c.s}% 52%)`;
+
+/* look = { on:false } means the original default look */
+let look = {};
+try{ look = JSON.parse(store.get('stay.look') || '{}'); }catch(e){ look = {}; }
+if(!look || typeof look !== 'object') look = {};
+if(typeof look.c !== 'number' || !COLORS[look.c]) look.c = 0;
+if(look.style !== 'matte') look.style = 'gradient';
+if(look.theme !== 'dark') look.theme = 'light';
+look.on = look.on === true;
+
+$('ddList').innerHTML = COLORS.map((c,i)=>
+    `<button class="opt" role="option" data-i="${i}"><span class="dot" style="background:${swatch(c)}"></span>${c.n}</button>`
+).join('');
+
+function applyLook(){
+    if(look.on){
+        const c = COLORS[look.c];
+        root.dataset.custom = '1';
+        root.dataset.style = look.style;
+        root.dataset.theme = look.theme;
+        root.style.setProperty('--h', c.h);
+        root.style.setProperty('--csat', c.s + '%');
+        if(c.dk) root.dataset.dk = '1'; else delete root.dataset.dk;
+        $('ddDot').style.background = swatch(c);
+        $('ddName').textContent = c.n;
+    }else{
+        delete root.dataset.custom;
+        delete root.dataset.style;
+        delete root.dataset.theme;
+        delete root.dataset.dk;
+        $('ddDot').style.background = '#2563eb';
+        $('ddName').textContent = 'Default';
+    }
+    document.querySelectorAll('.opt').forEach(b=>{
+        const on = look.on && +b.dataset.i === look.c;
+        b.classList.toggle('on', on);
+        b.setAttribute('aria-selected', on);
+    });
+    document.querySelectorAll('#segStyle button').forEach(b=>
+        b.classList.toggle('on', look.on && b.dataset.s === look.style));
+    document.querySelectorAll('#segMode button').forEach(b=>
+        b.classList.toggle('on', look.on && b.dataset.m === look.theme));
+}
+function save(){ look.on = true; store.set('stay.look', JSON.stringify(look)); applyLook(); }
+
+/* panel open / close */
+function setPanel(o){
+    $('cust').classList.toggle('open', o);
+    $('custBtn').setAttribute('aria-expanded', o);
+    if(!o) setList(false);
+}
+function setList(o){
+    $('ddList').classList.toggle('show', o);
+    $('ddBtn').setAttribute('aria-expanded', o);
+}
+$('custBtn').addEventListener('click', e=>{
+    e.stopPropagation();
+    setPanel(!$('cust').classList.contains('open'));
+});
+$('ddBtn').addEventListener('click', ()=> setList(!$('ddList').classList.contains('show')));
+$('ddList').addEventListener('click', e=>{
+    const b = e.target.closest('.opt'); if(!b) return;
+    look.c = +b.dataset.i; save(); setList(false);
+});
+$('segStyle').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    look.style = b.dataset.s; save();
+});
+$('segMode').addEventListener('click', e=>{
+    const b = e.target.closest('button'); if(!b) return;
+    look.theme = b.dataset.m; save();
+});
+$('reset').addEventListener('click', ()=>{
+    look = {on:false, c:0, style:'gradient', theme:'light'};
+    store.del('stay.look');
+    applyLook();
+});
+document.addEventListener('click', e=>{ if(!e.target.closest('#cust')) setPanel(false); });
+document.addEventListener('keydown', e=>{ if(e.key === 'Escape') setPanel(false); });
+
+applyLook();
+calculate();
 </script>
 
 </body>
